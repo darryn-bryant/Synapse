@@ -1,0 +1,20 @@
+name: Keep clone up to date
+stages:
+  - stage: running_git_commands
+    displayName: running_git_commands
+    jobs:
+      - job: initiate
+        displayName: initiate
+        continueOnError: false
+        steps:
+        - checkout: self
+          clean: true
+          persistCredentials: true
+          displayName: run_commands
+        - bash: | 
+            git remote add upstream $(REMOTE_ADDR)
+            git fetch upstream
+            git checkout $(BRANCH)
+            git reset --hard upstream/$(BRANCH)
+            git pull --rebase upstream $(BRANCH)
+            git push --force origin HEAD:$(BRANCH)
